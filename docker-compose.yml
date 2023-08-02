@@ -1,0 +1,21 @@
+version: "3.8"
+
+name: tig-stack
+
+services:
+  # FIXME: autoconfigure initial user
+  influxdb:
+    image: influxdb:2.7.1
+    container_name: tig-influxdb
+    hostname: influxdb
+    ports:
+      - "8086:8086"
+    env_file:
+      - ./env/influxdb.env
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+
+volumes:
+  influxdb-data:
+    name: tig-influxdb-data
+    external: false
