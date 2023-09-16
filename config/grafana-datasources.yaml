@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    uid: c2074906-db29-46ff-a8f1-f9ef0ff8f176
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: tig-org
+      defaultBucket: tig-bucket
+    secureJsonData:
+      token: 8d921e30-ba5a-4e7a-b3b2-8c33bf185d21
