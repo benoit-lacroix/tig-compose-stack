@@ -1,21 +1,19 @@
-# tig-compose-stack
+# Telegraf InfluxDB Grafana (TIG) Compose Stack
 
-A bundle of configuration to run a TI-G Compose stack
+A bundle of configuration to run a TIG Compose stack. The stack is composed of the following elements :
+- InfluxDB : to store metrics with TSDB storage and query/visualize metrics in dashboards
+- Telegraf Standalone : a simple Telegraf instance that push server standard metrics (CPU, RAM, disk, network...)
+- Grafana : to query/visualize metrics in dashboards
+- ActiveMQ : to host MQTT messages queues
+- MQTT Publisher : a custom image that push random metrics sensors (temperature, moisture, pressure, light)
+- Telegraf MQTT Consummer : to consume MQTT messages emitted by MQTT Publisher
 
-# FIXME
-
-## Désérialisation Ko côté MQTT Consummer
-
+The following flow diagram shows the differents components :
+```mermaid
+flowchart TD
+    T[Telegraf Standalone] ---->|Push Metrics| I[InfluxDB]
+    P[MQTT Publisher] -->|Publish Messages| B(MQTT Broker\nActiveMQ)
+    B -->|Consume Messages| C[Telegraf MQTT\nConsummer]
+    C -->|Push Metrics| I
+    I -->|Read Metrics| G[Grafana]
 ```
-2023-09-06T10:10:47Z E! [inputs.mqtt_consumer] Error in plugin: metric parse error: expected tag at 1:8: "1000000"
-2023-09-06T10:10:47.083412604Z 2023-09-06T10:10:47Z E! [inputs.mqtt_consumer] Error in plugin: metric parse error: expected tag at 1:2: "0"
-2023-09-06T10:10:47.083414207Z 2023-09-06T10:10:47Z E! [inputs.mqtt_consumer] Error in plugin: metric parse error: expected tag at 1:13: "233949884416"
-2023-09-06T10:10:47.083415780Z 2023-09-06T10:10:47Z E! [inputs.mqtt_consumer] Error in plugin: metric parse error: expected tag at 1:12: "56648093696"
-2023-09-06T10:10:47.083417303Z 2023-09-06T10:10:47Z E! [inputs.mqtt_consumer] Error in plugin: metric parse error: expected tag at 1:13: "177301790720"
-```
-
-# TODO
-
-- [ ] Désérialisation
-- [ ] Dashboard InfluxDB
-- [ ] Grafana (datasource + dashboards)
