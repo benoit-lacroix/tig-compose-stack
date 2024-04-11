@@ -6,20 +6,18 @@ services:
   # InfluxDB Instance
   influxdb:
     image: influxdb:2.7.1
-    container_name: tig-influxdb
     hostname: influxdb
     ports:
       - "8086:8086"
     env_file:
       - ./env/influxdb.env
     volumes:
-      - tig-influxdb-data:/var/lib/influxdb2
-      - tig-influxdb-etc-data:/etc/influxdb2
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-etc-data:/etc/influxdb2
 
   # Telegraf Standalone Instance
   telegraf:
     image: telegraf:1.27.4
-    container_name: tig-telegraf
     hostname: telegraf
     volumes:
       - ./config/telegraf-standalone.conf:/etc/telegraf/telegraf.conf
@@ -29,18 +27,16 @@ services:
   # ActiveMQ Instance
   activemq:
     image: rmohr/activemq:5.15.9
-    container_name: tig-activemq
     hostname: activemq
     ports:
       - "8161:8161"
       - "1883:1883"
     volumes:
-      - tig-activemq-data:/var/lib/activemq/data
+      - activemq-data:/var/lib/activemq/data
 
   # Telegraf MQTT Listener Instance
   telegraf-mqtt-consummer:
     image: telegraf:1.27.4
-    container_name: tig-telegraf-mqtt-consummer
     hostname: telegraf-mqtt-consummer
     volumes:
       - ./config/telegraf-mqtt-consummer.conf:/etc/telegraf/telegraf.conf
@@ -51,22 +47,20 @@ services:
   # Custom Simple MQTT Publisher
   mqtt-publisher:
     image: tig-mqtt-publisher
-    container_name: tig-mqtt-publisher
     build:
       context: ./mqtt-publisher
       no_cache: true
       tags:
         - tig-mqtt-publisher
     volumes:
-      - tig-mosquitto-data:/mosquitto/data
-      - tig-mosquitto-log:/mosquitto/log
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
     depends_on:
       - activemq
 
   # Grafana instance
   grafana:
     image: grafana/grafana:10.0.0
-    container_name: tig-grafana
     hostname: grafana
     ports:
       - "8080:3000"
@@ -76,30 +70,24 @@ services:
       - ./config/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/provisioning-dashboards.yaml:ro
       - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/provisioning-datasources.yaml:ro
       - ./dashboards:/var/lib/grafana/dashboards
-      - tig-grafana-data:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     depends_on:
       - influxdb
 
 volumes:
   # InfluxDB local storage
-  tig-influxdb-data:
-    name: tig-influxdb-data
+  influxdb-data:
     external: false
-  tig-influxdb-etc-data:
-    name: tig-influxdb-etc-data
+  influxdb-etc-data:
     external: false
   # ActiveMQ local storage
-  tig-activemq-data:
-    name: tig-activemq-data
+  activemq-data:
     external: false
   # MQTT Publisher local storage
-  tig-mosquitto-data:
-    name: tig-mosquitto-data
+  mosquitto-data:
     external: false
-  tig-mosquitto-log:
-    name: tig-mosquitto-log
+  mosquitto-log:
     external: false
   # Grafana local storage
-  tig-grafana-data:
-    name: tig-grafana-data
+  grafana-data:
     external: false
